@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 
 const backlogTodos = [
@@ -55,13 +55,15 @@ const Todos: React.FC<Props> = ({ backlogTodos }) => (
 );
 
 export default function Home() {
-  const handleDragEnd = () => {
+  const [todos, setTodos] = useState(backlogTodos);
+  const handleDragEnd = (result) => {
+    console.log(result);
     console.log("end");
   };
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <DragDropContext onDragEnd={handleDragEnd}>
-        <Todos backlogTodos={backlogTodos} />
+        <Todos backlogTodos={todos} />
       </DragDropContext>
     </main>
   );
