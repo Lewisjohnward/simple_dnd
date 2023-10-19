@@ -1,4 +1,5 @@
 "use client";
+import clsx from "clsx";
 import { useState } from "react";
 import {
   DragDropContext,
@@ -20,16 +21,21 @@ enum TodosStatus {
 const TodoItem = ({ index, todo, todos }) => {
   return (
     <Draggable draggableId={todo.id.toString()} index={index} key={todo.id}>
-      {(draggableProvided, draggableSnapshot) => (
-        <form
-          className="flex rounded-md bg-yellow-300  w-full p-[20px] mt-[15px]"
-          {...draggableProvided.draggableProps}
-          {...draggableProvided.dragHandleProps}
-          ref={draggableProvided.innerRef}
-        >
-          {todo.name}
-        </form>
-      )}
+      {(provided, snapshot) => {
+        return (
+          <form
+            className={clsx(
+              "flex rounded-md bg-yellow-300  w-full p-[20px] mt-[15px]",
+              snapshot.isDragging && "bg-blue-200"
+            )}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            ref={provided.innerRef}
+          >
+            {todo.name}
+          </form>
+        );
+      }}
     </Draggable>
   );
 };
@@ -37,11 +43,14 @@ const TodoItem = ({ index, todo, todos }) => {
 const Todos: React.FC<Props> = ({ backlogTodos }) => (
   <div className="grid grid-cols-1 w-full gap-6 mt-4 lg:grid-cols-3">
     <Droppable droppableId={"droppable-1"}>
-      {(droppableProvided, droppableSnapshot) => (
+      {(provided, snapshot) => (
         <div
-          className="bg-gray-400 px-5 py-3 rounded-md"
-          ref={droppableProvided.innerRef}
-          {...droppableProvided.droppableProps}
+          className={clsx(
+            "bg-gray-400 px-5 py-3 rounded-md",
+            snapshot.isDraggingOver && "bg-red-200"
+          )}
+          ref={provided.innerRef}
+          {...provided.droppableProps}
         >
           <span className="text-white text-2xl font-semibold">Backlog</span>
           {backlogTodos?.map((todo, index) => (
@@ -52,7 +61,7 @@ const Todos: React.FC<Props> = ({ backlogTodos }) => (
               todos={backlogTodos}
             />
           ))}
-          {droppableProvided.placeholder}
+          {provided.placeholder}
         </div>
       )}
     </Droppable>
@@ -82,9 +91,21 @@ export default function Home() {
     setTodos(previous);
   };
 
+  const handleOnBeforeCapture = () => {
+    console.log("onBeforeCapture");
+  };
+
+  const handleOnBeforeDragStart = () => {
+    console.log("OnBeforeDragStart");
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        onBeforeCapture={handleOnBeforeCapture}
+        onBeforeDragStart={handleOnBeforeDragStart}
+      >
         <Todos backlogTodos={todos} />
       </DragDropContext>
     </main>
