@@ -7,6 +7,7 @@ import {
   Droppable,
   DropResult,
 } from "react-beautiful-dnd";
+import { HiOutlineEllipsisVertical } from "react-icons/hi2";
 
 const backlogTodos = [
   { id: 3450, name: "test" },
@@ -29,9 +30,11 @@ const TodoItem = ({ index, todo, todos }) => {
               snapshot.isDragging && "bg-blue-200"
             )}
             {...provided.draggableProps}
-            {...provided.dragHandleProps}
             ref={provided.innerRef}
           >
+            <div {...provided.dragHandleProps}>
+              <HiOutlineEllipsisVertical />
+            </div>
             {todo.name}
           </form>
         );
